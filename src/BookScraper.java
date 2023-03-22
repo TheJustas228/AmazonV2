@@ -39,14 +39,41 @@ public class BookScraper {
             System.out.println(bookUrl.trim()); // veikia, outputtina knygu linkus visus
 
             Document bookDoc = Jsoup.connect(bookUrl).get();
-
 //            System.out.println(bookDoc.toString()); // veikia outputtina kiekvienos knygos linko vidu
 
             String title = bookDoc.select("h1 span[itemprop=name]").text().trim();
-            Elements books1 = doc.select(".about-product li");
+
+            String bookNoAuthor = "";
 
             System.out.println(title); // veikia, outputins visu knygu pavadinimus puslayje
-
+            for (int i = 0; i<8; i++) {
+                String bookPublisher = bookDoc.select(".about-product li").get(i).select("span[itemprop=name]").text().trim();
+                if (bookPublisher.length() > 1) {
+                        System.out.println(bookPublisher);
+                        bookNoAuthor =bookPublisher;
+                        break;
+                    }
+                }
+            for (int i = 0; i<8; i++) {
+                //<a href="https://www.knygos.lt/lt/knygos/autorius/rytis-zemkauskas/">Rytis Zemkauskas</a>
+                String bookAuthor = bookDoc.select(".about-product li").get(i).select("a[href]").text().trim();
+                if (bookAuthor.length() > 1) {
+                    if(bookNoAuthor.equals(bookAuthor)){
+                        System.out.println("Nėra autoriaus");
+                        break;
+                    }else {
+                        System.out.println(bookAuthor);
+                        break;
+                    }
+                }
+            }
+            for (int i = 0; i<8; i++){
+                String bookPages = bookDoc.select(".about-product li").get(i).select("span[itemprop=numberOfPages]").text().trim();
+                if(bookPages.length() > 1) {
+                    System.out.println(bookPages + " puslapiai");
+                    break;
+                }
+            }
             for (int i = 0; i<8; i++){
                 String bookCode = bookDoc.select(".about-product li").get(i).select("span[itemprop=isbn gtin13 sku]").text().trim();
                 if(bookCode.length() > 5) {
