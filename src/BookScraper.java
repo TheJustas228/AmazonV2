@@ -43,13 +43,17 @@ public class BookScraper {
 //            System.out.println(bookDoc.toString()); // veikia outputtina kiekvienos knygos linko vidu
 
             String title = bookDoc.select("h1 span[itemprop=name]").text().trim();
+            Elements books1 = doc.select(".about-product li");
 
             System.out.println(title); // veikia, outputins visu knygu pavadinimus puslayje
 
-            String bookCode = bookDoc.select(".about-product li").get(4).select("span[itemprop=isbn gtin13 sku]").text().trim();
-
-            System.out.println(bookCode); // check 6
-
+            for (int i = 0; i<8; i++){
+                String bookCode = bookDoc.select(".about-product li").get(i).select("span[itemprop=isbn gtin13 sku]").text().trim();
+                if(bookCode.length() > 5) {
+                    System.out.println(bookCode);
+                    break;
+                }
+            }
         }
         return null;
     }
