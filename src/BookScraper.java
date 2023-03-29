@@ -3,12 +3,21 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Scanner;
 
 public class BookScraper {
+    public static int bookCodeLast;
+    public static  int bookPagesLast;
+    public static  String authorLast;
+    public static  String publisherLast;
+    public static  String bookNameLast;
+    public static  String bookUrlLast;
 
     public static void main(String[] args) {
-        String url = "https://www.knygos.lt/lt/knygos/zanras/publicistika/";
+        String url = "https://www.knygos.lt/lt/knygos/zanras/grozine-literatura/";
 
         try {
             Map<String, String> bookDetails = scrapeBook(url);
@@ -26,8 +35,11 @@ public class BookScraper {
 
     public static Map<String, String> scrapeBook(String url) throws IOException {
         Document doc = Jsoup.connect(url).get();
+        ArrayList<Properties2> booksCollection = new ArrayList<Properties2>();
 
-//        System.out.print(doc.toString());
+
+
+
 
         Elements books = doc.select(".products-holder .product");
 
@@ -36,12 +48,16 @@ public class BookScraper {
             Element bookLink = book.select("a").first();
 
             String bookUrl = bookLink.attr("href");
-            System.out.println(bookUrl.trim()); // veikia, outputtina knygu linkus visus
+            //System.out.println(bookUrl.trim()); // veikia, outputtina knygu linkus visus
+
+            bookUrlLast = bookUrl.trim();
 
             Document bookDoc = Jsoup.connect(bookUrl).get();
 //            System.out.println(bookDoc.toString()); // veikia outputtina kiekvienos knygos linko vidu
 
             String title = bookDoc.select("h1 span[itemprop=name]").text().trim();
+
+            bookNameLast = title;
 
             String bookNoAuthor = "";
 
@@ -49,20 +65,22 @@ public class BookScraper {
             for (int i = 0; i<8; i++) {
                 String bookPublisher = bookDoc.select(".about-product li").get(i).select("span[itemprop=name]").text().trim();
                 if (bookPublisher.length() > 1) {
-                        System.out.println(bookPublisher);
+                       // System.out.println(bookPublisher);
                         bookNoAuthor =bookPublisher;
+                        publisherLast = bookPublisher;
                         break;
                     }
                 }
             for (int i = 0; i<8; i++) {
-                //<a href="https://www.knygos.lt/lt/knygos/autorius/rytis-zemkauskas/">Rytis Zemkauskas</a>
                 String bookAuthor = bookDoc.select(".about-product li").get(i).select("a[href]").text().trim();
                 if (bookAuthor.length() > 1) {
                     if(bookNoAuthor.equals(bookAuthor)){
-                        System.out.println("Nėra autoriaus");
+                       // System.out.println("Nėra autoriaus");
+                        authorLast = ("Nėra autoriaus");
                         break;
                     }else {
-                        System.out.println(bookAuthor);
+                       // System.out.println(bookAuthor);
+                        authorLast = bookAuthor;
                         break;
                     }
                 }
@@ -70,17 +88,29 @@ public class BookScraper {
             for (int i = 0; i<8; i++){
                 String bookPages = bookDoc.select(".about-product li").get(i).select("span[itemprop=numberOfPages]").text().trim();
                 if(bookPages.length() > 1) {
-                    System.out.println(bookPages + " puslapiai");
+                    //System.out.println(bookPages + " puslapiai");
+                    int convertedBP = Integer.parseInt(bookPages);
+                    bookPagesLast = convertedBP;
                     break;
                 }
             }
             for (int i = 0; i<8; i++){
                 String bookCode = bookDoc.select(".about-product li").get(i).select("span[itemprop=isbn gtin13 sku]").text().trim();
                 if(bookCode.length() > 5) {
-                    System.out.println(bookCode);
+                    //System.out.println(bookCode);
+                    try {
+                        int convertedBC = Integer.parseInt(bookCode);
+                        bookCodeLast = convertedBC;
+                    } catch (NumberFormatException e) {
+                        bookCodeLast = -1;
+                    }
                     break;
                 }
             }
+            booksCollection.add(new Properties2(bookNameLast, bookCodeLast, bookPagesLast, publisherLast));
+        }
+        for(int i = 0; i<10; i++){
+            System.out.println(booksCollection.get(i).getPageCount());
         }
         return null;
     }
