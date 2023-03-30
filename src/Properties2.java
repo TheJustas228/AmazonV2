@@ -1,3 +1,6 @@
+import java.util.Collection;
+import java.util.Properties;
+
 public class Properties2 {
     private String name;
     private int barcode;
@@ -35,4 +38,20 @@ public class Properties2 {
     public void setPublisher(String publisher) {
         this.publisher = publisher;
     }
+//    public static void sortPageCount(ArrayList<Properties2> lol){
+//        boolean swap = true; //sorts the collection by page count
+//        while (swap) {
+//            swap = false;
+//            for (int i = 0; i < lol.size() - 1; i++) {
+//
+//                if (lol.get(i).getPageCount() > lol.get(i + 1).getPageCount()) {
+//                    swap = true;
+//                    Properties2 temp = lol.get(i);
+//                    lol.set(i, lol.get(i+1));
+//                    lol.set(i+1, temp);
+//                }
+//            }
+//
+//        }
+//    }
 }

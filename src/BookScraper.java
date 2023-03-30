@@ -10,11 +10,11 @@ import java.util.Scanner;
 
 public class BookScraper {
     public static int bookCodeLast;
-    public static  int bookPagesLast;
-    public static  String authorLast;
-    public static  String publisherLast;
-    public static  String bookNameLast;
-    public static  String bookUrlLast;
+    public static int bookPagesLast;
+    public static String authorLast;
+    public static String publisherLast;
+    public static String bookNameLast;
+    public static String bookUrlLast;
 
     public static void main(String[] args) {
         String url = "https://www.knygos.lt/lt/knygos/zanras/grozine-literatura/";
@@ -38,9 +38,6 @@ public class BookScraper {
         ArrayList<Properties2> booksCollection = new ArrayList<Properties2>();
 
 
-
-
-
         Elements books = doc.select(".products-holder .product");
 
         for (Element book : books) {
@@ -61,42 +58,42 @@ public class BookScraper {
 
             String bookNoAuthor = "";
 
-            System.out.println(title); // veikia, outputins visu knygu pavadinimus puslayje
-            for (int i = 0; i<8; i++) {
+           // System.out.println(title); // veikia, outputins visu knygu pavadinimus puslayje
+            for (int i = 0; i < 8; i++) {
                 String bookPublisher = bookDoc.select(".about-product li").get(i).select("span[itemprop=name]").text().trim();
                 if (bookPublisher.length() > 1) {
-                       // System.out.println(bookPublisher);
-                        bookNoAuthor =bookPublisher;
-                        publisherLast = bookPublisher;
-                        break;
-                    }
+                    // System.out.println(bookPublisher);
+                    bookNoAuthor = bookPublisher;
+                    publisherLast = bookPublisher;
+                    break;
                 }
-            for (int i = 0; i<8; i++) {
+            }
+            for (int i = 0; i < 8; i++) {
                 String bookAuthor = bookDoc.select(".about-product li").get(i).select("a[href]").text().trim();
                 if (bookAuthor.length() > 1) {
-                    if(bookNoAuthor.equals(bookAuthor)){
-                       // System.out.println("Nėra autoriaus");
+                    if (bookNoAuthor.equals(bookAuthor)) {
+                        // System.out.println("Nėra autoriaus");
                         authorLast = ("Nėra autoriaus");
                         break;
-                    }else {
-                       // System.out.println(bookAuthor);
+                    } else {
+                        // System.out.println(bookAuthor);
                         authorLast = bookAuthor;
                         break;
                     }
                 }
             }
-            for (int i = 0; i<8; i++){
+            for (int i = 0; i < 8; i++) {
                 String bookPages = bookDoc.select(".about-product li").get(i).select("span[itemprop=numberOfPages]").text().trim();
-                if(bookPages.length() > 1) {
+                if (bookPages.length() > 1) {
                     //System.out.println(bookPages + " puslapiai");
                     int convertedBP = Integer.parseInt(bookPages);
                     bookPagesLast = convertedBP;
                     break;
                 }
             }
-            for (int i = 0; i<8; i++){
+            for (int i = 0; i < 8; i++) {
                 String bookCode = bookDoc.select(".about-product li").get(i).select("span[itemprop=isbn gtin13 sku]").text().trim();
-                if(bookCode.length() > 5) {
+                if (bookCode.length() > 5) {
                     //System.out.println(bookCode);
                     try {
                         int convertedBC = Integer.parseInt(bookCode);
@@ -109,7 +106,36 @@ public class BookScraper {
             }
             booksCollection.add(new Properties2(bookNameLast, bookCodeLast, bookPagesLast, publisherLast));
         }
-        for(int i = 0; i<10; i++){
+//        boolean swap = true; //sorts the collection by page count
+//        while (swap) {
+//            swap = false;
+//            for (int i = 0; i < booksCollection.size() - 1; i++) {
+//
+//                if (booksCollection.get(i).getPageCount() > booksCollection.get(i + 1).getPageCount()) {
+//                    swap = true;
+//                    Properties2 temp = booksCollection.get(i);
+//                    booksCollection.set(i, booksCollection.get(i+1));
+//                    booksCollection.set(i+1, temp);
+//                }
+//            }
+//
+//        }
+        boolean swap = true; //sorts the collection by name
+        while (swap) {
+            swap = false;
+            for (int i = 0; i < booksCollection.size() - 1; i++) {
+
+                if (booksCollection.get(i).getName().compareTo(booksCollection.get(i+1).getName()) >0) {
+                    swap = true;
+                    Properties2 temp = booksCollection.get(i);
+                    booksCollection.set(i, booksCollection.get(i+1));
+                    booksCollection.set(i+1, temp);
+                }
+            }
+        }
+
+        for (int i = 0; i < booksCollection.size() - 1; i++) {
+            System.out.println(booksCollection.get(i).getName());
             System.out.println(booksCollection.get(i).getPageCount());
         }
         return null;
